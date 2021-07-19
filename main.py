@@ -98,7 +98,7 @@ while True:
                 window1.close()
                 window2 = 1
                 break
-
+# First UI completed and we found the similar headers from both files
 
 
 
