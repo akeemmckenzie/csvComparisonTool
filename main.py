@@ -19,6 +19,6 @@ while True:
     if event in (None, 'Exit', 'Cancel'):
         Window2 = 0
         break
-    elif event == 'Proceed':
-        else : print('Error : Please choose 2 files')
+    # elif event == 'Proceed':
+        
 
