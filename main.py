@@ -4,6 +4,7 @@ import datacompy
 import pandas as pd
 supportedextensions = {'csv','xlsx','xlsm','json'}
 
+#build Window 1
 layoutprefile = [
     [sg.Text('Select the two files you wish to use')],
     [sg.Text('File 1'), sg.InputText(),sg.FileBrowse()],
@@ -51,9 +52,30 @@ while True:
                 print('Error : Files are the same, please select a different one')
                 pass_stage = 0
 
+            #now lets read the files
             elif pass_stage == 1:
                 print('First stage passed : Accessing files now')
-                
+                try: 
+                    if re.findall('/.+?/.+\.(.+)', file1)[0] == 'csv':
+                        df1, df2 = pd.read_csv(file1), pd.read_csv(file2)
+                    elif re.findall('/.+?/.+\.(.+)', file1)[0] == 'json':
+                        df1, df2 = pd.read_json(file1), pd.read_json(file2)
+                    elif re.findall('/.+?/.+\.(.+)', file1)[0] in ['xlsx', 'xlsm']:
+                        df1, df2 = pd.read_excel(file1), pd.read_excel(file2) 
+                    proceedtofindcommonkeys = 1
+                except IOError:
+                    print('Error : File not accessible')
+                    proceedtofindcommonkeys = 0
+                except UnicodeDecodeError:
+                    print("Error : File includes a unicode character that cannot be decoded with the default UTF decryption")
+                    proceedtofindcommonkeys = 0
+                except Exception as e:
+                    print('Error : ', e)
+                    proceedtofindcommonkeys = 0
+        else:
+            print('Error : Please choose 2 files')
+            
+
 
                 
 
