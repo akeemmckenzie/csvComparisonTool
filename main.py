@@ -12,7 +12,13 @@ layoutprefile = [
     [sg.Output(size=(61,5))],
     [sg.Submit('Proceed'), sg.Cancel('Exit')]
 ]
-window = sg.Window('University of North Florida CSV Comparison Tool', layoutprefile)
+window1 = sg.Window('University of North Florida CSV Comparison Tool', layoutprefile)
 while True:
-    event, values = window.read()
+    event, values = window1.read()
+    # end if exit is clicked
+    if event in (None, 'Exit', 'Cancel'):
+        Window2 = 0
+        break
+    elif event == 'Proceed':
+        else : print('Error : Please choose 2 files')
 
