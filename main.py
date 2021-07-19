@@ -1,3 +1,5 @@
+# Code Info : This project is designed to take two files of the same extention and find the differences and add those differences into another csv file
+
 import PySimpleGUI as sg
 import re, time
 import datacompy
