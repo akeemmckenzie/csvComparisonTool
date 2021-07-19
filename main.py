@@ -21,18 +21,42 @@ while True:
         break
     elif event == 'Proceed':
         #now we check if two same file types have been selected 
-        file1temp = file2temp = temp_pass = next_stage = None
+        file1temp = file2temp = pass_stage = next_stage = None
         file1, file2 = values[0],values[1]
         if file1 and file2:
             file1temp = re.findall('.+:\/.+.', file1)
             file2temp = re.findall('.+:\/.+.', file1)
-            temp_pass = 1
+            pass_stage = 1
+
+            #check if the paths for both files is valid 
             if not file1temp and file1temp is not None:
                 print('Error :File 1 path is not valid')
                 temp_pass = 0
             elif not file2temp and file2temp is not None:
                 print('Error :File 2 path is not valid')
-                temp_pass = 0
+                pass_stage = 0
+            
+            #check if file extensions are the same
+            elif re.findall('/.+?/.+\.(.+)', file1) != re.findall('/.+?/.+\.(.+)', file2):
+                print('Error : Files have different extensions')
+                pass_stage = 0
+
+            #check if extension is supported
+            elif re.findall('/.+?/.+\.(.+)', file1)[0] not in supportedextensions or re.findall('/.+?/.+\.(.+)', file1)[0] not in supportedextensions:
+                print('Error : File extention not supported at this time')
+                pass_stage = 0
+
+            #checks if files are the same
+            elif file1 == file2:
+                print('Error : Files are the same, please select a different one')
+                pass_stage = 0
+
+            elif pass_stage == 1:
+                print('First stage passed : Accessing files now')
+                
+
+                
+
 
             
         
