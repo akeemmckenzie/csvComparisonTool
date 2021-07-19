@@ -74,7 +74,32 @@ while True:
                     proceedtofindcommonkeys = 0
         else:
             print('Error : Please choose 2 files')
-            
+        
+        if proceedtofindcommonkeys == 1 :
+            keylist1 = [] #list of headers from file 1
+            keylist2 = [] #list of headers from file 2
+            keylist =[] #list of similar headers in both files
+            formslist = [] #List of headers to be displayed in UI
+
+            # Now lets add headers to their list 
+            for header in df1.columns:
+                if header not in keylist1:
+                    keylist1.append(header)
+            for header in df2.columns:
+                if header not in keylist2:
+                    keylist2.append(header)
+            for item in keylist1:
+                if item in keylist2:
+                    keylist.append(item)
+            if len(keylist) == 0:
+                print('No similar headers')
+                Window2 = 0
+            else:
+                window1.close()
+                window2 = 1
+                break
+
+
 
 
                 
