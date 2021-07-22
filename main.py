@@ -2,6 +2,7 @@
 
 import PySimpleGUI as sg
 import re, time
+from PySimpleGUI.PySimpleGUI import Window
 import datacompy
 import pandas as pd
 supportedextensions = {'csv','xlsx','xlsm','json'}
@@ -102,7 +103,17 @@ while True:
                 break
 # First UI completed and we found the similar headers from both files
 
+if Window2 != 1:
+    exit()
 
+maxlen = 0
+for header in keylist:
+    if len(str(header)) > maxlen:
+        maxlen = len(str(header))
+if maxlen > 25:
+    maxlen = 25
+elif maxlen < 10:
+    maxlen = 15    
 
                 
 
