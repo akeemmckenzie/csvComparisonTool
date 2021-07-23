@@ -21,7 +21,7 @@ while True:
     event, values = window1.read()
     # end if exit is clicked
     if event in (None, 'Exit', 'Cancel'):
-        Window2 = 0
+        secondwindow = 0
         break
     elif event == 'Next':
         #now we check if two same file types have been selected 
@@ -96,14 +96,14 @@ while True:
                     keylist.append(item)
             if len(keylist) == 0:
                 print('No similar headers')
-                Window2 = 0
+                secondwindow = 0
             else:
                 window1.close()
-                window2 = 1
+                secondwindow = 1
                 break
 # First UI completed and we found the similar headers from both files
 
-if Window2 != 1:
+if secondwindow != 1:
     exit()
 
 maxlen = 0
@@ -115,9 +115,43 @@ if maxlen > 25:
 elif maxlen < 10:
     maxlen = 15    
 
-                
+#we need to split the keys to four columns
+for index,item in enumerate(keylist):
+    if index == 0: i =0
+    if len(keylist) >= 4 and i == 0:
+        formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None)),sg.Checkbox(keylist[i+1], size=(maxlen,None)),sg.Checkbox(keylist[i+2], size=(maxlen,None)),sg.Checkbox(keylist[i+3], size=(maxlen,None))])
+        i += 4
+    elif len(keylist) > i:
+        if len(keylist) - i - 4>= 0:
+            formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None)),sg.Checkbox(keylist[i+1], size=(maxlen,None)),sg.Checkbox(keylist[i+2], size=(maxlen,None)),sg.Checkbox(keylist[i+3], size=(maxlen,None))])
+            i += 4
+        elif len(keylist) - i - 3>= 0:
+            formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None)),sg.Checkbox(keylist[i+1], size=(maxlen,None)),sg.Checkbox(keylist[i+2], size=(maxlen,None))])
+            i += 3
+        elif len(keylist)- i - 2>= 0:
+            formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None)),sg.Checkbox(keylist[i+1], size=(maxlen,None))])
+            i += 2
+        elif len(keylist) - i - 1>= 0:
+            formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None))])
+            i += 1
+        else:
+            sg.Popup('Error: Uh-oh, something\'s gone wrong!')                
 
-
+#Second UI
+layoutpostfile = [
+    [sg.Text('File 1'), sg.InputText(file1,disabled = True, size = (75,2))],
+    [sg.Text('File 2'), sg.InputText(file2,disabled = True, size = (75,2))],
+    #[sg.Text('Select the data key for the comparison:')],
+    [sg.Frame(layout=[
+        *formslist],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
+    )],
+    [sg.Submit('Compare'), sg.Cancel('Exit')]
+]
             
-        
-
+window2 = sg.Window('File Compare', layoutpostfile)        
+datakeydefined = 0
+definedkey = []
+while True:  # The Event Loop
+    event, values = window2.read()
+    if event in (None, 'Exit', 'Cancel'):
+        break
