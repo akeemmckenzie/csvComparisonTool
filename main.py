@@ -142,9 +142,14 @@ layoutpostfile = [
     [sg.Text('File 1'), sg.InputText(file1,disabled = True, size = (75,2))],
     [sg.Text('File 2'), sg.InputText(file2,disabled = True, size = (75,2))],
     #[sg.Text('Select the data key for the comparison:')],
-    [sg.Frame(layout=[
-        *formslist],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
+    [sg.Frame(layout=[sg.Checkbox(keylist1[i])],title = 'cfdfyf',
     )],
+    [sg.Frame(layout=[
+        *keylist1],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
+    )],
+    # [sg.Frame(layout=[
+    #     *keylist2],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
+    # )],
     [sg.Submit('Compare'), sg.Cancel('Exit')]
 ]
             
