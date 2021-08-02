@@ -83,7 +83,7 @@ while True:
             keylist2 = [] #list of headers from file 2
             keylist =[] #list of similar headers in both files
             formslist = [] #List of headers to be displayed in UI
-
+#########################################################################This section completed##################################################################
             # Now lets add headers to their list 
             for header in df1.columns:
                 if header not in keylist1:
@@ -142,8 +142,8 @@ layoutpostfile = [
     [sg.Text('File 1'), sg.InputText(file1,disabled = True, size = (75,2))],
     [sg.Text('File 2'), sg.InputText(file2,disabled = True, size = (75,2))],
     #[sg.Text('Select the data key for the comparison:')],
-    [sg.Frame(layout=[sg.Checkbox(keylist1[i])],title = 'cfdfyf',
-    )],
+    # [sg.Frame(layout=[sg.Checkbox(keylist1[i])],title = 'cfdfyf',
+    # )],
     [sg.Frame(layout=[
         *keylist1],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
     )],
