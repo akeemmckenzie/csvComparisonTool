@@ -79,35 +79,38 @@ while True:
             print('Error : Please choose 2 files')
         
         if proceedtofindcommonkeys == 1 :
-            keylist1 = [] #list of headers from file 1
-            keylist2 = [] #list of headers from file 2
-            keylist =[] #list of similar headers in both files
-            formslist = [] #List of headers to be displayed in UI
+            first_file_headers = [] #list of headers from file 1
+            second_file_headers = [] #list of headers from file 2
+            similar_headers =[] #list of similar headers in both files
+            display1 = [] #List of headers to be displayed in UI for first file
+            display2= [] #list of headers to be displayed in UI for second file
+
 #########################################################################This section completed##################################################################
             # Now lets add headers to their list 
             for header in df1.columns:
-                if header not in keylist1:
-                    keylist1.append(header)
+                if header not in first_file_headers:
+                    first_file_headers.append(header)
             for header in df2.columns:
-                if header not in keylist2:
-                    keylist2.append(header)
-            for item in keylist1:
-                if item in keylist2:
-                    keylist.append(item)
-            if len(keylist) == 0:
-                print('No similar headers')
-                secondwindow = 0
-            else:
-                window1.close()
-                secondwindow = 1
-                break
+                if header not in second_file_headers:
+                    second_file_headers.append(header)
+            for item in first_file_headers:
+                if item in second_file_headers:
+                    similar_headers.append(item)
+            # if len(similar_headers) == 0:
+            #     print('No similar headers')
+            #     secondwindow = 0
+            # else:
+            window1.close()
+            secondwindow = 1
+            break
 # First UI completed and we found the similar headers from both files
 
 if secondwindow != 1:
     exit()
 
 maxlen = 0
-for header in keylist:
+maxlen1 = 0
+for header in first_file_headers:
     if len(str(header)) > maxlen:
         maxlen = len(str(header))
 if maxlen > 25:
@@ -115,41 +118,70 @@ if maxlen > 25:
 elif maxlen < 10:
     maxlen = 15    
 
-#we need to split the keys to four columns
-for index,item in enumerate(keylist):
+for header in second_file_headers:
+    if len(str(header)) > maxlen1:
+        maxlen1 = len(str(header))
+if maxlen1 > 25:
+    maxlen1 = 25
+elif maxlen1 < 10:
+    maxlen1 = 15    
+
+#we need to split the keys to four columns for first file
+for index,item in enumerate(first_file_headers):
     if index == 0: i =0
-    if len(keylist) >= 4 and i == 0:
-        formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None)),sg.Checkbox(keylist[i+1], size=(maxlen,None)),sg.Checkbox(keylist[i+2], size=(maxlen,None)),sg.Checkbox(keylist[i+3], size=(maxlen,None))])
+    if len(first_file_headers) >= 4 and i == 0:
+        display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+3], size=(maxlen,None))])
         i += 4
-    elif len(keylist) > i:
-        if len(keylist) - i - 4>= 0:
-            formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None)),sg.Checkbox(keylist[i+1], size=(maxlen,None)),sg.Checkbox(keylist[i+2], size=(maxlen,None)),sg.Checkbox(keylist[i+3], size=(maxlen,None))])
+    elif len(first_file_headers) > i:
+        if len(first_file_headers) - i - 4>= 0:
+            display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+3], size=(maxlen,None))])
             i += 4
-        elif len(keylist) - i - 3>= 0:
-            formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None)),sg.Checkbox(keylist[i+1], size=(maxlen,None)),sg.Checkbox(keylist[i+2], size=(maxlen,None))])
+        elif len(first_file_headers) - i - 3>= 0:
+            display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None))])
             i += 3
-        elif len(keylist)- i - 2>= 0:
-            formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None)),sg.Checkbox(keylist[i+1], size=(maxlen,None))])
+        elif len(first_file_headers)- i - 2>= 0:
+            display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None))])
             i += 2
-        elif len(keylist) - i - 1>= 0:
-            formslist.append([sg.Checkbox(keylist[i], size=(maxlen,None))])
+        elif len(first_file_headers) - i - 1>= 0:
+            display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None))])
             i += 1
         else:
-            sg.Popup('Error: Uh-oh, something\'s gone wrong!')                
+            sg.Popup('Error: Uh-oh, something\'s gone wrong!')      
 
-#Second UI
+#we need to split the keys to four columns for second file
+for index,item in enumerate(second_file_headers):
+    if index == 0: i =0
+    if len(second_file_headers) >= 4 and i == 0:
+        display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+3], size=(maxlen,None))])
+        i += 4
+    elif len(second_file_headers) > i:
+        if len(second_file_headers) - i - 4>= 0:
+            display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+3], size=(maxlen,None))])
+            i += 4
+        elif len(second_file_headers) - i - 3>= 0:
+            display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None))])
+            i += 3
+        elif len(second_file_headers)- i - 2>= 0:
+            display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None))])
+            i += 2
+        elif len(second_file_headers) - i - 1>= 0:
+            display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None))])
+            i += 1
+        else:
+            sg.Popup('Error: Uh-oh, something\'s gone wrong!')            
+
+# #Second UI
 layoutpostfile = [
-    [sg.Text('File 1'), sg.InputText(file1,disabled = True, size = (75,2))],
-    [sg.Text('File 2'), sg.InputText(file2,disabled = True, size = (75,2))],
-    #[sg.Text('Select the data key for the comparison:')],
-    # [sg.Frame(layout=[sg.Checkbox(keylist1[i])],title = 'cfdfyf',
-    # )],
-    [sg.Frame(layout=[
-        *keylist1],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
-    )],
+    # [sg.Text('File 1'), sg.InputText(file1,disabled = True, size = (75,2))],
     # [sg.Frame(layout=[
-    #     *keylist2],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
+    #     *display1],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
     # )],
+    # [sg.Text('File 2'), sg.InputText(file2,disabled = True, size = (75,2))],
+    # [sg.Frame(layout=[
+    #     *display2],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
+    # )],
+    [sg.Text('Select the data mapping for comparison'), sg.InputText(file1,disabled = True, size = (75,2))],
+    # [sg.Listbox(list(display1), size=(20,4), enable_events=False, key='_LIST_')],
     [sg.Submit('Compare'), sg.Cancel('Exit')]
 ]
             
