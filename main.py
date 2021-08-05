@@ -1,8 +1,9 @@
 # Code Info : This project is designed to take two files of the same extention and find the differences and add those differences into another csv file
 
+from tkinter.constants import DISABLED, FALSE
 import PySimpleGUI as sg
 import re, time
-from PySimpleGUI.PySimpleGUI import Window
+from PySimpleGUI.PySimpleGUI import RELIEF_RIDGE, Window
 import datacompy
 import pandas as pd
 supportedextensions = {'csv','xlsx','xlsm','json'}
@@ -170,25 +171,31 @@ for index,item in enumerate(second_file_headers):
         else:
             sg.Popup('Error: Uh-oh, something\'s gone wrong!')            
 
-# #Second UI
+#Second UI
 layoutpostfile = [
-    # [sg.Text('File 1'), sg.InputText(file1,disabled = True, size = (75,2))],
-    # [sg.Frame(layout=[
-    #     *display1],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
-    # )],
-    # [sg.Text('File 2'), sg.InputText(file2,disabled = True, size = (75,2))],
-    # [sg.Frame(layout=[
-    #     *display2],title = 'Select the Data Key for Comparison',relief=sg.RELIEF_RIDGE
-    # )],
-    [sg.Text('Select the data mapping for comparison'), sg.InputText(file1,disabled = True, size = (75,2))],
-    # [sg.Listbox(list(display1), size=(20,4), enable_events=False, key='_LIST_')],
-    [sg.Submit('Compare'), sg.Cancel('Exit')]
+    [sg.Text('Location of file one'), sg.InputText(file1,disabled = True, size = (75,2))],
+    [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
+    [sg.Button('Select first comparison')],
+    [sg.Text('Please choose one header for each comparison from file one')],
+    [sg.Frame(layout=[*display1],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
+    [sg.Text('Please choose one header for each comparison from file two')],
+    [sg.Frame(layout=[*display2],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
+    [sg.Button("Compare 1")],
+    [sg.Button('Compare all similar headers'), sg.Cancel('Exit')]
+    
 ]
             
-window2 = sg.Window('File Compare', layoutpostfile)        
+window2 = sg.Window('File Compare', layoutpostfile).Finalize()        
 datakeydefined = 0
 definedkey = []
 while True:  # The Event Loop
+    window2.FindElement('Compare 1').Update(disabled = True)
     event, values = window2.read()
     if event in (None, 'Exit', 'Cancel'):
         break
+    elif event == 'Select first comparison':
+        window2.FindElement['Compare 1'].update(disabled =FALSE)
+
+        
+
+    
