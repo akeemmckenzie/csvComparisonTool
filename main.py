@@ -6,6 +6,7 @@ import re, time
 from PySimpleGUI.PySimpleGUI import RELIEF_RIDGE, Window
 import datacompy
 import pandas as pd
+import numpy as np
 supportedextensions = {'csv','xlsx','xlsm','json'}
 
 #build Window 1
@@ -97,10 +98,6 @@ while True:
             for item in first_file_headers:
                 if item in second_file_headers:
                     similar_headers.append(item)
-            # if len(similar_headers) == 0:
-            #     print('No similar headers')
-            #     secondwindow = 0
-            # else:
             window1.close()
             secondwindow = 1
             break
@@ -175,27 +172,39 @@ for index,item in enumerate(second_file_headers):
 layoutpostfile = [
     [sg.Text('Location of file one'), sg.InputText(file1,disabled = True, size = (75,2))],
     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
-    [sg.Button('Select first comparison')],
+    [sg.Text('Comparison 1')],
     [sg.Text('Please choose one header for each comparison from file one')],
-    [sg.Frame(layout=[*display1],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
+    [sg.Radio(display1,"Radio1", default= True)],
     [sg.Text('Please choose one header for each comparison from file two')],
-    [sg.Frame(layout=[*display2],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
-    [sg.Button("Compare 1")],
-    [sg.Button('Compare all similar headers'), sg.Cancel('Exit')]
+    #[sg.Radio(layout=[*display2],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
+    [sg.Button("Add Another Comparison")],
+    [sg.Button("Compare all selected headers")],
+    [sg.Button('Compare column to column'), sg.Cancel('Exit')]
     
 ]
-            
-window2 = sg.Window('File Compare', layoutpostfile).Finalize()        
+
+dffile1 = pd.read_excel(file1)
+dffile2 = pd.read_excel(file2)
+comparevalues = dffile1.values == dffile2.values
+
+rows,cols = np.where(comparevalues == False)
+
+for item in zip(rows,cols):
+    dffile1.iloc[item[0],item[1]] = '{} --> {}'.format(dffile1.iloc[item[0], item[1]], dffile2.iloc[item[0], item[1]])
+       
+window2 = sg.Window('File Compare', layoutpostfile).Finalize()       
 datakeydefined = 0
 definedkey = []
 while True:  # The Event Loop
-    window2.FindElement('Compare 1').Update(disabled = True)
     event, values = window2.read()
     if event in (None, 'Exit', 'Cancel'):
         break
-    elif event == 'Select first comparison':
-        window2.FindElement['Compare 1'].update(disabled =FALSE)
+    elif event == 'Choose another batch':
+        window2.close()
 
+
+    elif event == 'Compare column to column':
+        dffile1.to_excel('files/output.xlsx', index = False , header=True)
         
 
     
