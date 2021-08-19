@@ -174,15 +174,16 @@ layoutpostfile = [
     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
     [sg.Text('Comparison 1')],
     [sg.Text('Please choose one header for each comparison from file one')],
-    [sg.Radio(display1,"Radio1", default= True)],
+    [sg.Frame(layout=[*display1],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
     [sg.Text('Please choose one header for each comparison from file two')],
-    #[sg.Radio(layout=[*display2],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
+    [sg.Frame(layout=[*display2],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
     [sg.Button("Add Another Comparison")],
     [sg.Button("Compare all selected headers")],
     [sg.Button('Compare column to column'), sg.Cancel('Exit')]
     
 ]
 
+#######Compare Column by Column Code work ############
 dffile1 = pd.read_excel(file1)
 dffile2 = pd.read_excel(file2)
 comparevalues = dffile1.values == dffile2.values
@@ -191,6 +192,11 @@ rows,cols = np.where(comparevalues == False)
 
 for item in zip(rows,cols):
     dffile1.iloc[item[0],item[1]] = '{} --> {}'.format(dffile1.iloc[item[0], item[1]], dffile2.iloc[item[0], item[1]])
+       
+##################################################
+
+#### Compare all selected headers code work #################
+
        
 window2 = sg.Window('File Compare', layoutpostfile).Finalize()       
 datakeydefined = 0
