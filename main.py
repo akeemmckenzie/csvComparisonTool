@@ -3,9 +3,10 @@
 from tkinter.constants import DISABLED, FALSE
 import PySimpleGUI as sg
 import re, time
-from PySimpleGUI.PySimpleGUI import RELIEF_RIDGE, Window
+from PySimpleGUI.PySimpleGUI import Column, RELIEF_RIDGE, Tree, Window
 import datacompy
 import pandas as pd
+import operator
 import numpy as np
 supportedextensions = {'csv','xlsx','xlsm','json'}
 
@@ -106,67 +107,79 @@ while True:
 if secondwindow != 1:
     exit()
 
-maxlen = 0
-maxlen1 = 0
-for header in first_file_headers:
-    if len(str(header)) > maxlen:
-        maxlen = len(str(header))
-if maxlen > 25:
-    maxlen = 25
-elif maxlen < 10:
-    maxlen = 15    
+# maxlen = 0
+# maxlen1 = 0
+# for header in first_file_headers:
+#     if len(str(header)) > maxlen:
+#         maxlen = len(str(header))
+# if maxlen > 25:
+#     maxlen = 25
+# elif maxlen < 10:
+#     maxlen = 15    
 
-for header in second_file_headers:
-    if len(str(header)) > maxlen1:
-        maxlen1 = len(str(header))
-if maxlen1 > 25:
-    maxlen1 = 25
-elif maxlen1 < 10:
-    maxlen1 = 15    
+# for header in second_file_headers:
+#     if len(str(header)) > maxlen1:
+#         maxlen1 = len(str(header))
+# if maxlen1 > 25:
+#     maxlen1 = 25
+# elif maxlen1 < 10:
+#     maxlen1 = 15    
 
-#we need to split the keys to four columns for first file
-for index,item in enumerate(first_file_headers):
-    if index == 0: i =0
-    if len(first_file_headers) >= 4 and i == 0:
-        display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+3], size=(maxlen,None))])
-        i += 4
-    elif len(first_file_headers) > i:
-        if len(first_file_headers) - i - 4>= 0:
-            display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+3], size=(maxlen,None))])
-            i += 4
-        elif len(first_file_headers) - i - 3>= 0:
-            display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None))])
-            i += 3
-        elif len(first_file_headers)- i - 2>= 0:
-            display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None))])
-            i += 2
-        elif len(first_file_headers) - i - 1>= 0:
-            display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None))])
-            i += 1
-        else:
-            sg.Popup('Error: Uh-oh, something\'s gone wrong!')      
+# #we need to split the keys to four columns for first file
+# for index,item in enumerate(first_file_headers):
+#     if index == 0: i =0
+#     if len(first_file_headers) >= 4 and i == 0:
+#         display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+3], size=(maxlen,None))])
+#         i += 4
+#     elif len(first_file_headers) > i:
+#         if len(first_file_headers) - i - 4>= 0:
+#             display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+3], size=(maxlen,None))])
+#             i += 4
+#         elif len(first_file_headers) - i - 3>= 0:
+#             display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+2], size=(maxlen,None))])
+#             i += 3
+#         elif len(first_file_headers)- i - 2>= 0:
+#             display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None)),sg.Checkbox(first_file_headers[i+1], size=(maxlen,None))])
+#             i += 2
+#         elif len(first_file_headers) - i - 1>= 0:
+#             display1.append([sg.Checkbox(first_file_headers[i], size=(maxlen,None))])
+#             i += 1
+#         else:
+#             sg.Popup('Error: Uh-oh, something\'s gone wrong!')      
 
-#we need to split the keys to four columns for second file
-for index,item in enumerate(second_file_headers):
-    if index == 0: i =0
-    if len(second_file_headers) >= 4 and i == 0:
-        display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+3], size=(maxlen,None))])
-        i += 4
-    elif len(second_file_headers) > i:
-        if len(second_file_headers) - i - 4>= 0:
-            display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+3], size=(maxlen,None))])
-            i += 4
-        elif len(second_file_headers) - i - 3>= 0:
-            display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None))])
-            i += 3
-        elif len(second_file_headers)- i - 2>= 0:
-            display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None))])
-            i += 2
-        elif len(second_file_headers) - i - 1>= 0:
-            display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None))])
-            i += 1
-        else:
-            sg.Popup('Error: Uh-oh, something\'s gone wrong!')            
+# #we need to split the keys to four columns for second file
+# for index,item in enumerate(second_file_headers):
+#     if index == 0: i =0
+#     if len(second_file_headers) >= 4 and i == 0:
+#         display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+3], size=(maxlen,None))])
+#         i += 4
+#     elif len(second_file_headers) > i:
+#         if len(second_file_headers) - i - 4>= 0:
+#             display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+3], size=(maxlen,None))])
+#             i += 4
+#         elif len(second_file_headers) - i - 3>= 0:
+#             display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+2], size=(maxlen,None))])
+#             i += 3
+#         elif len(second_file_headers)- i - 2>= 0:
+#             display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None)),sg.Checkbox(second_file_headers[i+1], size=(maxlen,None))])
+#             i += 2
+#         elif len(second_file_headers) - i - 1>= 0:
+#             display2.append([sg.Checkbox(second_file_headers[i], size=(maxlen,None))])
+#             i += 1
+#         else:
+#             sg.Popup('Error: Uh-oh, something\'s gone wrong!')            
+
+#######Compare Column by Column Code work ############
+dffile1 = pd.read_excel(file1)
+dffile2 = pd.read_excel(file2)
+comparevalues = dffile1.values == dffile2.values
+rows,cols = np.where(comparevalues == False)
+for item in zip(rows,cols):
+    dffile1.iloc[item[0],item[1]] = '{} --> {}'.format(dffile1.iloc[item[0], item[1]], dffile2.iloc[item[0], item[1]])
+       
+##################################################
+
+#### Compare all selected headers code work #################
 
 #Second UI
 layoutpostfile = [
@@ -174,28 +187,14 @@ layoutpostfile = [
     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
     [sg.Text('Comparison 1')],
     [sg.Text('Please choose one header for each comparison from file one')],
-    [sg.Frame(layout=[*display1],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
+    [sg.Radio(dffile1.columns.values[i],"test1", default = False)for i in range(len(dffile1.columns.values))],
     [sg.Text('Please choose one header for each comparison from file two')],
-    [sg.Frame(layout=[*display2],title ='Please select one for comparison', relief = sg.RELIEF_RIDGE)],
+    [sg.Radio(dffile2.columns.values[i],"test2", default = False)for i in range(len(dffile2.columns.values))],
     [sg.Button("Add Another Comparison")],
     [sg.Button("Compare all selected headers")],
-    [sg.Button('Compare column to column'), sg.Cancel('Exit')]
-    
+    [sg.Button('Compare column to column'), sg.Cancel('Exit')] 
 ]
 
-#######Compare Column by Column Code work ############
-dffile1 = pd.read_excel(file1)
-dffile2 = pd.read_excel(file2)
-comparevalues = dffile1.values == dffile2.values
-
-rows,cols = np.where(comparevalues == False)
-
-for item in zip(rows,cols):
-    dffile1.iloc[item[0],item[1]] = '{} --> {}'.format(dffile1.iloc[item[0], item[1]], dffile2.iloc[item[0], item[1]])
-       
-##################################################
-
-#### Compare all selected headers code work #################
 
        
 window2 = sg.Window('File Compare', layoutpostfile).Finalize()       
@@ -207,10 +206,12 @@ while True:  # The Event Loop
         break
     elif event == 'Choose another batch':
         window2.close()
-
-
+    elif event == 'Compare all selected headers':
+        print(window2["test1"])
     elif event == 'Compare column to column':
-        dffile1.to_excel('files/output.xlsx', index = False , header=True)
+        dffile1.to_excel('files/column_to_column.xlsx', index = False , header=True)
+        sg.popup('Request Completed, please check files folder')
+
         
 
     
