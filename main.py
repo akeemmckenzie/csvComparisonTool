@@ -128,7 +128,7 @@ while True:  # The Event Loop
     elif event == 'Choose another batch':
         window2.close()
     elif event == 'Compare all selected headers':
-        print(window2["test1"])
+        print(event == "test1")
     elif event == 'Compare column to column':
         xlwriter = pd.ExcelWriter('files/column_to_column.xlsx')
         df.to_excel(xlwriter, sheet_name= 'all matched rows', index = False , header=True)
