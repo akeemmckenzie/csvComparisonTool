@@ -14,8 +14,6 @@ layoutprefile = [
     [sg.Text('Select the two files you wish to use')],
     [sg.Text('File 1'), sg.InputText(),sg.FileBrowse()],
     [sg.Text('File 2'), sg.InputText(),sg.FileBrowse()],
-    #---List One---#
-    #[sg.Output(size=(61,5))],
     [sg.Submit('Next'), sg.Cancel('Exit')]
 ]
 window1 = sg.Window('University of North Florida CSV Comparison Tool', layoutprefile)
@@ -37,7 +35,7 @@ while True:
             #check if the paths for both files is valid 
             if not file1temp and file1temp is not None:
                 print('Error :File 1 path is not valid')
-                temp_pass = 0
+                pass_stage = 0
             elif not file2temp and file2temp is not None:
                 print('Error :File 2 path is not valid')
                 pass_stage = 0
@@ -79,30 +77,12 @@ while True:
                     proceedtofindcommonkeys = 0
         else:
             print('Error : Please choose 2 files')
-        
         if proceedtofindcommonkeys == 1 :
-            first_file_headers = [] #list of headers from file 1
-            second_file_headers = [] #list of headers from file 2
-            similar_headers =[] #list of similar headers in both files
-            display1 = [] #List of headers to be displayed in UI for first file
-            display2= [] #list of headers to be displayed in UI for second file
-
-#########################################################################This section completed##################################################################
-            # Now lets add headers to their list 
-            for header in df1.columns:
-                if header not in first_file_headers:
-                    first_file_headers.append(header)
-            for header in df2.columns:
-                if header not in second_file_headers:
-                    second_file_headers.append(header)
-            for item in first_file_headers:
-                if item in second_file_headers:
-                    similar_headers.append(item)
             window1.close()
             secondwindow = 1
             break
-# First UI completed and we found the similar headers from both files
 
+#########################################################################This section completed#################################################################
 if secondwindow != 1:
     exit()
 
@@ -137,8 +117,7 @@ layoutpostfile = [
     [sg.Button('Compare column to column'), sg.Cancel('Exit')] 
 ]
 
-
-       
+      
 window2 = sg.Window('File Compare', layoutpostfile).Finalize()       
 datakeydefined = 0
 definedkey = []
