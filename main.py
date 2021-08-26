@@ -1,5 +1,6 @@
 # Code Info : This project is designed to take two files of the same extention and find the differences and add those differences into another csv file
 
+from typing import Text
 import PySimpleGUI as sg
 import re, time
 from PySimpleGUI.PySimpleGUI import Column, RELIEF_RIDGE, Tree, Window
@@ -102,23 +103,26 @@ unique_df2 = df1.merge(df2, how = 'outer' ,indicator=True).loc[lambda x : x['_me
 ##################################################
 
 #### Compare all selected headers code work #################
-
+for i in range(len(df1.columns.values)):
+    keys1 = "key_one"+str(i)
+# for o in range(len(df2.columns.values)):
+#     keys2 = "key_two"+str(o)
 #Second UI
 layoutpostfile = [
     [sg.Text('Location of file one'), sg.InputText(file1,disabled = True, size = (75,2))],
     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
     [sg.Text('Comparison 1')],
     [sg.Text('Please choose one header for each comparison from file one')],
-    [sg.Radio(df1.columns.values[i],"test1", default = False)for i in range(len(df1.columns.values))],
+    [sg.Radio(df1.columns.values[i],"test1", default = False, key =keys1[i])for i in range(len(df1.columns.values))],
     [sg.Text('Please choose one header for each comparison from file two')],
-    [sg.Radio(df2.columns.values[i],"test2", default = False)for i in range(len(df2.columns.values))],
+    [sg.Radio(df2.columns.values[i],"test2", default = False,)for i in range(len(df2.columns.values))],
     [sg.Button("Add Another Comparison")],
     [sg.Button("Compare all selected headers")],
     [sg.Button('Compare column to column'), sg.Cancel('Exit')] 
 ]
 
       
-window2 = sg.Window('File Compare', layoutpostfile).Finalize()       
+window2 = sg.Window('File Compare', layoutpostfile)      
 datakeydefined = 0
 definedkey = []
 while True:  # The Event Loop
@@ -128,7 +132,10 @@ while True:  # The Event Loop
     elif event == 'Choose another batch':
         window2.close()
     elif event == 'Compare all selected headers':
-        print(event == "test1")
+        print(len(keys1))
+    #     for key in keys1:
+    #         if key.get()==True:
+    #             print(window2.FindElement(key).get())
     elif event == 'Compare column to column':
         xlwriter = pd.ExcelWriter('files/column_to_column.xlsx')
         df.to_excel(xlwriter, sheet_name= 'all matched rows', index = False , header=True)
