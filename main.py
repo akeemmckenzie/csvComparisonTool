@@ -92,9 +92,7 @@ if secondwindow != 1:
 df1 = pd.read_excel(file1)
 df2 = pd.read_excel(file2)
 
-# for col in df1.columns:
-#     print(col)
-# Finding the matched rows 
+#Finding matched rows
 df = df1.merge(df2, how = 'inner' ,indicator=False)
        
 # Finding unique rows in file 1
@@ -112,9 +110,6 @@ for k in range(len(df1.columns.values)):
 keys2 = []
 for p in range(len(df2.columns.values)):
     keys2.append(df2.columns.values[p]+ '_file2')
-# print(keys1)
-# print(keys2)
-
 
 #Second UI
 layoutpostfile = [
@@ -132,8 +127,6 @@ layoutpostfile = [
 
       
 window2 = sg.Window('File Compare', layoutpostfile)      
-datakeydefined = 0
-definedkey = []
 while True:  # The Event Loop
     event, values = window2.read()
     if event in (None, 'Exit', 'Cancel'):
@@ -148,14 +141,8 @@ while True:  # The Event Loop
             if(values[keys2[i]]== TRUE):
                 file2_val_selected =(window2.Element(keys2[i]).Key.removesuffix('_file2'))
 
-        
-        # sf1 = df1[file1_val_selected].to_frame()
-        # sf2 = df2[file2_val_selected].to_frame()
-        # sf1['tmp'] = 1
-        # sf2['tmp'] = 1
         # Finding the matched rows 
         sf = df1.merge(df2, how ='inner', left_on= file1_val_selected, right_on= file2_val_selected, indicator=False)
-        # sf = sf1.merge(sf2, how = 'inner' ,indicator=False)
         # Finding unique rows in file 1
         unique_sf1 = df1.merge(df2, how = 'outer' ,indicator=True).loc[lambda x : x['_merge']=='left_only']
         # Finding unique rows in file 2
