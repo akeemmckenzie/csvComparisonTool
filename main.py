@@ -115,12 +115,12 @@ for p in range(len(df2.columns.values)):
 layoutpostfile = [
     [sg.Text('Location of file one'), sg.InputText(file1,disabled = True, size = (75,2))],
     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
-    [sg.Text('Comparison 1')],
+    [sg.Text('Comparison')],
     [sg.Text('Please choose one header for each comparison from file one')],
     [sg.Radio(df1.columns.values[i],"test1", default = False, key= keys1[i])for i in range(len(df1.columns.values))],
     [sg.Text('Please choose one header for each comparison from file two')],
     [sg.Radio(df2.columns.values[i],"test2", default = False, key = keys2[i])for i in range(len(df2.columns.values))],
-    [sg.Button("Add Another Comparison")],
+    [sg.Button('Add Another Comparison')],
     [sg.Button("Compare all selected headers")],
     [sg.Button('Compare column to column'), sg.Cancel('Exit')] 
 ]
@@ -128,19 +128,28 @@ layoutpostfile = [
       
 window2 = sg.Window('File Compare', layoutpostfile)      
 while True:  # The Event Loop
+    file1_val_selected = []
+    file2_val_selected = []
     event, values = window2.read()
     if event in (None, 'Exit', 'Cancel'):
         break
-    elif event == 'Choose another batch':
-        window2.close()
+    elif event == 'Add Another Comparison':
+        for i in range(len(keys1)):
+            if(values[keys1[i]]== TRUE):
+                file1_val_selected.append(window2.Element(keys1[i]).Key.removesuffix('_file1'))
+                window2.Element(keys1[i]).update(value= False)
+        for i in range(len(keys2)):
+            if(values[keys2[i]]== TRUE):
+                file2_val_selected.append(window2.Element(keys2[i]).Key.removesuffix('_file2'))
+                window2.Element(keys2[i]).update(value= False)
+
     elif event == 'Compare all selected headers':
         for i in range(len(keys1)):
             if(values[keys1[i]]== TRUE):
-                file1_val_selected =(window2.Element(keys1[i]).Key.removesuffix('_file1'))
+                file1_val_selected.append(window2.Element(keys1[i]).Key.removesuffix('_file1'))
         for i in range(len(keys2)):
             if(values[keys2[i]]== TRUE):
-                file2_val_selected =(window2.Element(keys2[i]).Key.removesuffix('_file2'))
-
+                file2_val_selected.append(window2.Element(keys2[i]).Key.removesuffix('_file2'))
         # Finding the matched rows 
         sf = df1.merge(df2, how ='inner', left_on= file1_val_selected, right_on= file2_val_selected, indicator=False)
         # Finding unique rows in file 1
@@ -148,7 +157,7 @@ while True:  # The Event Loop
         # Finding unique rows in file 2
         unique_sf2 = df1.merge(df2, how = 'outer' ,indicator=True).loc[lambda x : x['_merge']=='right_only']
 
-        xlwriter = pd.ExcelWriter('files/compareselected.xlsx')
+        xlwriter = pd.ExcelWriter('files/compare_selected.xlsx')
         sf.to_excel(xlwriter, sheet_name= 'all matched rows', index = False , header=True)
         unique_sf1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
         unique_sf2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
