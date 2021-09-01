@@ -103,8 +103,11 @@ unique_df2 = df1.merge(df2, how = 'outer' ,indicator=True).loc[lambda x : x['_me
 ##################################################
 
 #### Compare all selected headers code work #################
-for i in range(len(df1.columns.values)):
-    keys1 = "key_one"+str(i)
+keys1 = []
+for k in range(len(df1.columns.values)):
+    keys1.append(df1.columns.values[k])
+
+print(keys1)
 # for o in range(len(df2.columns.values)):
 #     keys2 = "key_two"+str(o)
 #Second UI
@@ -113,7 +116,7 @@ layoutpostfile = [
     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
     [sg.Text('Comparison 1')],
     [sg.Text('Please choose one header for each comparison from file one')],
-    [sg.Radio(df1.columns.values[i],"test1", default = False, key =keys1[i])for i in range(len(df1.columns.values))],
+    [sg.Radio(df1.columns.values[i],"test1", default = False, key= keys1[i])for i in range(len(df1.columns.values))],
     [sg.Text('Please choose one header for each comparison from file two')],
     [sg.Radio(df2.columns.values[i],"test2", default = False,)for i in range(len(df2.columns.values))],
     [sg.Button("Add Another Comparison")],
@@ -133,9 +136,9 @@ while True:  # The Event Loop
         window2.close()
     elif event == 'Compare all selected headers':
         print(len(keys1))
-    #     for key in keys1:
-    #         if key.get()==True:
-    #             print(window2.FindElement(key).get())
+        # for key in keys1:
+        #     if key.get()==True:
+        #         print(window2.FindElement(key).get())
     elif event == 'Compare column to column':
         xlwriter = pd.ExcelWriter('files/column_to_column.xlsx')
         df.to_excel(xlwriter, sheet_name= 'all matched rows', index = False , header=True)
