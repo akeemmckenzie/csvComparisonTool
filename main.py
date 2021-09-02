@@ -126,10 +126,10 @@ layoutpostfile = [
 ]
 
       
-window2 = sg.Window('File Compare', layoutpostfile)      
+window2 = sg.Window('File Compare', layoutpostfile)    
+file1_val_selected = []
+file2_val_selected = []  
 while True:  # The Event Loop
-    file1_val_selected = []
-    file2_val_selected = []
     event, values = window2.read()
     if event in (None, 'Exit', 'Cancel'):
         break
@@ -142,7 +142,8 @@ while True:  # The Event Loop
             if(values[keys2[i]]== TRUE):
                 file2_val_selected.append(window2.Element(keys2[i]).Key.removesuffix('_file2'))
                 window2.Element(keys2[i]).update(value= False)
-
+        print(file1_val_selected)
+        print(file2_val_selected)
     elif event == 'Compare all selected headers':
         for i in range(len(keys1)):
             if(values[keys1[i]]== TRUE):
@@ -150,6 +151,8 @@ while True:  # The Event Loop
         for i in range(len(keys2)):
             if(values[keys2[i]]== TRUE):
                 file2_val_selected.append(window2.Element(keys2[i]).Key.removesuffix('_file2'))
+        print(file1_val_selected)
+        print(file2_val_selected)
         # Finding the matched rows 
         sf = df1.merge(df2, how ='inner', left_on= file1_val_selected, right_on= file2_val_selected, indicator=False)
         # Finding unique rows in file 1
