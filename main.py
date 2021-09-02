@@ -4,7 +4,7 @@ from tkinter.constants import TRUE
 from typing import Text
 import PySimpleGUI as sg
 import re, time
-from PySimpleGUI.PySimpleGUI import Column, RELIEF_RIDGE, Element, Tree, Window
+from PySimpleGUI.PySimpleGUI import Column, RELIEF_RIDGE, Element, InputText, Tree, Window
 from numpy import inner
 from openpyxl.workbook.workbook import Workbook
 import pandas as pd
@@ -89,8 +89,14 @@ if secondwindow != 1:
     exit()
 
 #######Compare Column by Column Code work ############
-df1 = pd.read_excel(file1)
-df2 = pd.read_excel(file2)
+
+#Read file given (Files accessible are csv,xlsx and json)
+if re.findall('/.+?/.+\.(.+)', file1)[0] == 'csv':
+    df1, df2 = pd.read_csv(file1), pd.read_csv(file2)
+elif re.findall('/.+?/.+\.(.+)', file1)[0] == 'json':
+    df1, df2 = pd.read_json(file1), pd.read_json(file2)
+elif re.findall('/.+?/.+\.(.+)', file1)[0] in ['xlsx', 'xlsm']:
+    df1, df2 = pd.read_excel(file1), pd.read_excel(file2)
 
 #Finding matched rows
 df = df1.merge(df2, how = 'inner' ,indicator=False)
@@ -111,6 +117,18 @@ keys2 = []
 for p in range(len(df2.columns.values)):
     keys2.append(df2.columns.values[p]+ '_file2')
 
+file1_val_selected = []
+file2_val_selected = [] 
+
+# Function to convert  
+def listToString(s): 
+    
+    # initialize an empty string
+    str1 = "," 
+    
+    # return string  
+    return (str1.join(s))
+        
 #Second UI
 layoutpostfile = [
     [sg.Text('Location of file one'), sg.InputText(file1,disabled = True, size = (75,2))],
@@ -120,39 +138,49 @@ layoutpostfile = [
     [sg.Radio(df1.columns.values[i],"test1", default = False, key= keys1[i])for i in range(len(df1.columns.values))],
     [sg.Text('Please choose one header for each comparison from file two')],
     [sg.Radio(df2.columns.values[i],"test2", default = False, key = keys2[i])for i in range(len(df2.columns.values))],
-    [sg.Button('Add Another Comparison')],
-    [sg.Button("Compare all selected headers")],
+    [sg.Button('Add Another Comparison'), sg.Button('Clear Comparison')],
+    [sg.InputText('File 1 :' + listToString(file1_val_selected), readonly= True ,key = 'text1', size = (100,150))],
+    [sg.InputText('File 2 :' + listToString(file2_val_selected), readonly= True ,key = 'text2', size = (100,150))],
+    [sg.Button("Compare all selected headers")], 
     [sg.Button('Compare column to column'), sg.Cancel('Exit')] 
 ]
 
       
-window2 = sg.Window('File Compare', layoutpostfile)    
-file1_val_selected = []
-file2_val_selected = []  
+window2 = sg.Window('File Compare', layoutpostfile)     
 while True:  # The Event Loop
     event, values = window2.read()
     if event in (None, 'Exit', 'Cancel'):
         break
+
     elif event == 'Add Another Comparison':
         for i in range(len(keys1)):
             if(values[keys1[i]]== TRUE):
                 file1_val_selected.append(window2.Element(keys1[i]).Key.removesuffix('_file1'))
                 window2.Element(keys1[i]).update(value= False)
+                window2['text1'].update('File 1:' +listToString(file1_val_selected))
         for i in range(len(keys2)):
             if(values[keys2[i]]== TRUE):
                 file2_val_selected.append(window2.Element(keys2[i]).Key.removesuffix('_file2'))
                 window2.Element(keys2[i]).update(value= False)
-        print(file1_val_selected)
-        print(file2_val_selected)
+                window2['text2'].update('File 2:' +listToString(file2_val_selected))
+
+    elif event == 'Clear Comparison':
+        file1_val_selected.clear()
+        file2_val_selected.clear()
+        window2['text1'].update('File 1:' +listToString(file1_val_selected))
+        window2['text2'].update('File 2:' +listToString(file2_val_selected))
+
+
     elif event == 'Compare all selected headers':
         for i in range(len(keys1)):
             if(values[keys1[i]]== TRUE):
                 file1_val_selected.append(window2.Element(keys1[i]).Key.removesuffix('_file1'))
+                window2['text1'].update('File 1:' +listToString(file1_val_selected))
         for i in range(len(keys2)):
             if(values[keys2[i]]== TRUE):
                 file2_val_selected.append(window2.Element(keys2[i]).Key.removesuffix('_file2'))
-        print(file1_val_selected)
-        print(file2_val_selected)
+                window2['text2'].update('File 2:' +listToString(file2_val_selected))
+        
         # Finding the matched rows 
         sf = df1.merge(df2, how ='inner', left_on= file1_val_selected, right_on= file2_val_selected, indicator=False)
         # Finding unique rows in file 1
@@ -166,6 +194,10 @@ while True:  # The Event Loop
         unique_sf2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
         xlwriter.close()
         sg.popup('Request Completed, please check files folder')
+        file1_val_selected.clear()
+        file2_val_selected.clear()
+        window2['text1'].update('File 1:' +listToString(file1_val_selected))
+        window2['text2'].update('File 2:' +listToString(file2_val_selected))
 
     elif event == 'Compare column to column':
         xlwriter = pd.ExcelWriter('files/column_to_column.xlsx')
@@ -174,6 +206,8 @@ while True:  # The Event Loop
         unique_df2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
         xlwriter.close()
         sg.popup('Request Completed, please check files folder')
+
+
 
         
     
