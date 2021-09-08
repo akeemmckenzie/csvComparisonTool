@@ -1,5 +1,6 @@
 # Code Info : This project is designed to take two files of the same extention and find the differences and add those differences into another csv file
 
+from genericpath import isdir
 from tkinter.constants import TRUE
 from typing import Text
 import PySimpleGUI as sg
@@ -9,7 +10,16 @@ from numpy import inner
 from openpyxl.workbook.workbook import Workbook
 import pandas as pd
 import openpyxl
+import os
 supportedextensions = {'csv','xlsx','xlsm','json'}
+
+path = "C:\Users\Documents"
+isdir = os.path.isdir(path)
+print(isdir)
+if isdir == False :
+    os.mkdir(path)
+else :
+    print("directory already exists")
 
 #build Window 1
 layoutprefile = [
