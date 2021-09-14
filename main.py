@@ -14,7 +14,7 @@ import os
 supportedextensions = {'csv','xlsx','xlsm','json'}
 
 
-#build Window 1
+# #build Window 1
 layoutprefile = [
     [sg.Text('Select the two files you wish to use')],
     [sg.Text('File 1'), sg.InputText(),sg.FileBrowse()],
@@ -140,7 +140,7 @@ def listToString(s):
 m = re.search('/Users/(.+?)/', file1)
 if m:
     username = m.group(1)
-    path = '/Users/'+username+'/Desktop/csvcomparison'
+    path = '/Users/'+username+'/Documents/csvcomparison'
     isExist = os.path.exists(path)
     if not isExist:
         os.makedirs(path)
@@ -213,7 +213,8 @@ while True:  # The Event Loop
         unique_sf1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
         unique_sf2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
         xlwriter.close()
-        sg.popup('Request Completed, please check files folder')
+        if sg.PopupOKCancel('Request Completed, Continue to open file?') == 'OK':
+            os.system("start excel.exe " + path +'/compare_selected.xlsx')
         file1_val_selected.clear()
         file2_val_selected.clear()
         window2['text1'].update('File 1:' +listToString(file1_val_selected))
@@ -225,9 +226,10 @@ while True:  # The Event Loop
         unique_df1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
         unique_df2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
         xlwriter.close()
-        sg.popup('Request Completed, please check files folder')
+        if sg.PopupOKCancel('Request Completed, Continue to open file?') == 'OK':
+            os.system("start excel.exe "+ path + '/column_to_column.xlsx')
 
-
+    
 
         
     
