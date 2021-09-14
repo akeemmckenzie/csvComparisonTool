@@ -13,13 +13,6 @@ import openpyxl
 import os
 supportedextensions = {'csv','xlsx','xlsm','json'}
 
-path = "C:\Users\Documents"
-isdir = os.path.isdir(path)
-print(isdir)
-if isdir == False :
-    os.mkdir(path)
-else :
-    print("directory already exists")
 
 #build Window 1
 layoutprefile = [
@@ -34,6 +27,8 @@ while True:
     # end if exit is clicked
     if event in (None, 'Exit', 'Cancel'):
         secondwindow = 0
+        break
+    if event == 'Exit':
         break
     elif event == 'Next':
         #now we check if two same file types have been selected 
@@ -138,11 +133,26 @@ def listToString(s):
     
     # return string  
     return (str1.join(s))
-        
-#Second UI
+
+
+
+#Create location for output
+m = re.search('/Users/(.+?)/', file1)
+if m:
+    username = m.group(1)
+    path = '/Users/'+username+'/Desktop/csvcomparison'
+    isExist = os.path.exists(path)
+    if not isExist:
+        os.makedirs(path)
+        print("The new directory is created")
+    else :
+        print("directory already exists")
+
+
 layoutpostfile = [
     [sg.Text('Location of file one'), sg.InputText(file1,disabled = True, size = (75,2))],
     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
+    [sg.Text('Output Location default'), sg.InputText(path),sg.FolderBrowse()],
     [sg.Text('Comparison')],
     [sg.Text('Please choose one header for each comparison from file one')],
     [sg.Radio(df1.columns.values[i],"test1", default = False, key= keys1[i])for i in range(len(df1.columns.values))],
@@ -198,7 +208,7 @@ while True:  # The Event Loop
         # Finding unique rows in file 2
         unique_sf2 = df1.merge(df2, how = 'outer' ,indicator=True).loc[lambda x : x['_merge']=='right_only']
 
-        xlwriter = pd.ExcelWriter('files/compare_selected.xlsx')
+        xlwriter = pd.ExcelWriter(path +'/compare_selected.xlsx')
         sf.to_excel(xlwriter, sheet_name= 'all matched rows', index = False , header=True)
         unique_sf1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
         unique_sf2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
@@ -210,7 +220,7 @@ while True:  # The Event Loop
         window2['text2'].update('File 2:' +listToString(file2_val_selected))
 
     elif event == 'Compare column to column':
-        xlwriter = pd.ExcelWriter('files/column_to_column.xlsx')
+        xlwriter = pd.ExcelWriter(path + '/column_to_column.xlsx')
         df.to_excel(xlwriter, sheet_name= 'all matched rows', index = False , header=True)
         unique_df1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
         unique_df2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
