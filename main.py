@@ -5,15 +5,16 @@ from tkinter.constants import TRUE
 from typing import Text
 import PySimpleGUI as sg
 import re, time
-from PySimpleGUI.PySimpleGUI import Column, RELIEF_RIDGE, Element, InputText, Tree, Window
+from PySimpleGUI.PySimpleGUI import Button, Column, RELIEF_RIDGE, Element, InputText, Tree, Window
 from numpy import inner
 from openpyxl.workbook.workbook import Workbook
 import pandas as pd
 import openpyxl
 import os
+import copy
 supportedextensions = {'csv','xlsx','xlsm','json'}
 
-
+layout = []
 # #build Window 1
 layoutprefile = [
     [sg.Text('Select the two files you wish to use')],
@@ -21,9 +22,10 @@ layoutprefile = [
     [sg.Text('File 2'), sg.InputText(),sg.FileBrowse()],
     [sg.Submit('Next'), sg.Cancel('Exit')]
 ]
-window1 = sg.Window('University of North Florida CSV Comparison Tool', layoutprefile)
+window1 = sg.Window('University of North Florida CSV Comparison Tool', layoutprefile,)
 while True:
     event, values = window1.read()
+    # window1(1)
     # end if exit is clicked
     if event in (None, 'Exit', 'Cancel'):
         secondwindow = 0
@@ -85,10 +87,10 @@ while True:
         else:
             print('Error : Please choose 2 files')
         if proceedtofindcommonkeys == 1 :
-            window1.close()
+            window1.Hide()
+            window1.disable()
             secondwindow = 1
             break
-
 #########################################################################This section completed#################################################################
 if secondwindow != 1:
     exit()
@@ -154,15 +156,15 @@ layoutpostfile = [
     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
     [sg.Text('Output Location default'), sg.InputText(path),sg.FolderBrowse()],
     [sg.Text('Comparison')],
-    [sg.Text('Please choose one header for each comparison from file one')],
+    [sg.Text('Please choose one header for each comparison from File one')],
     [sg.Radio(df1.columns.values[i],"test1", default = False, key= keys1[i])for i in range(len(df1.columns.values))],
-    [sg.Text('Please choose one header for each comparison from file two')],
+    [sg.Text('Please choose one header for each comparison from File two')],
     [sg.Radio(df2.columns.values[i],"test2", default = False, key = keys2[i])for i in range(len(df2.columns.values))],
-    [sg.Button('Add Another Comparison'), sg.Button('Clear Comparison')],
+    [sg.Button('Add Comparison'), sg.Button('Clear Comparison')],
     [sg.InputText('File 1 :' + listToString(file1_val_selected), readonly= True ,key = 'text1', size = (100,150))],
     [sg.InputText('File 2 :' + listToString(file2_val_selected), readonly= True ,key = 'text2', size = (100,150))],
     [sg.Button("Compare all selected headers")], 
-    [sg.Button('Compare column to column'), sg.Cancel('Exit')] 
+    [sg.Button('Compare column to column'),  sg.Cancel('Exit')] 
 ]
 
       
@@ -172,7 +174,7 @@ while True:  # The Event Loop
     if event in (None, 'Exit', 'Cancel'):
         break
 
-    elif event == 'Add Another Comparison':
+    elif event == 'Add Comparison':
         for i in range(len(keys1)):
             if(values[keys1[i]]== TRUE):
                 file1_val_selected.append(window2.Element(keys1[i]).Key.removesuffix('_file1'))
@@ -214,7 +216,7 @@ while True:  # The Event Loop
         unique_sf2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
         xlwriter.close()
         if sg.PopupOKCancel('Request Completed, Continue to open file?') == 'OK':
-            os.system("start excel.exe " + path +'/compare_selected.xlsx')
+            os.system('start "excel" "C:\"' + path +'/compare_selected.xlsx')
         file1_val_selected.clear()
         file2_val_selected.clear()
         window2['text1'].update('File 1:' +listToString(file1_val_selected))
@@ -227,9 +229,10 @@ while True:  # The Event Loop
         unique_df2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
         xlwriter.close()
         if sg.PopupOKCancel('Request Completed, Continue to open file?') == 'OK':
-            os.system("start excel.exe "+ path + '/column_to_column.xlsx')
+            os.system('start "excel" "C:\"'+ path + '/column_to_column.xlsx')
+
 
     
-
+        
         
     
