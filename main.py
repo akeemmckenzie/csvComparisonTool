@@ -14,19 +14,17 @@ import os
 import copy
 supportedextensions = {'csv','xlsx','xlsm','json'}
 
-layout = []
-# #build Window 1
+
+#build Window 1
 layoutprefile = [
     [sg.Text('Select the two files you wish to use')],
     [sg.Text('File 1'), sg.InputText(),sg.FileBrowse()],
     [sg.Text('File 2'), sg.InputText(),sg.FileBrowse()],
-    [sg.Submit('Next'), sg.Cancel('Exit')]
+    [sg.Submit('Next'), sg.Cancel('Exit')],
 ]
 window1 = sg.Window('University of North Florida CSV Comparison Tool', layoutprefile,)
 while True:
     event, values = window1.read()
-    # window1(1)
-    # end if exit is clicked
     if event in (None, 'Exit', 'Cancel'):
         secondwindow = 0
         break
@@ -36,6 +34,7 @@ while True:
         #now we check if two same file types have been selected 
         file1temp = file2temp = pass_stage = next_stage = None
         file1, file2 = values[0],values[1]
+        proceedtofindcommonkeys = 0
         if file1 and file2:
             file1temp = re.findall('.+:\/.+.', file1)
             file2temp = re.findall('.+:\/.+.', file1)
@@ -43,30 +42,29 @@ while True:
 
             #check if the paths for both files is valid 
             if not file1temp and file1temp is not None:
-                print('Error :File 1 path is not valid')
+                sg.popup('Error :File 1 path is not valid')
                 pass_stage = 0
             elif not file2temp and file2temp is not None:
-                print('Error :File 2 path is not valid')
+                sg.popup('Error :File 2 path is not valid')
                 pass_stage = 0
             
             #check if file extensions are the same
             elif re.findall('/.+?/.+\.(.+)', file1) != re.findall('/.+?/.+\.(.+)', file2):
-                print('Error : Files have different extensions')
+                sg.popup('Error : Files have different extensions')
                 pass_stage = 0
 
             #check if extension is supported
             elif re.findall('/.+?/.+\.(.+)', file1)[0] not in supportedextensions or re.findall('/.+?/.+\.(.+)', file1)[0] not in supportedextensions:
-                print('Error : File extention not supported at this time')
+                sg.popup('Error : File extention not supported at this time')
                 pass_stage = 0
 
             #checks if files are the same
             elif file1 == file2:
-                print('Error : Files are the same, please select a different one')
+                sg.popup('Error : Files are the same, please select a different one')
                 pass_stage = 0
 
             #now lets read the files
             elif pass_stage == 1:
-                print('First stage passed : Accessing files now')
                 try: 
                     if re.findall('/.+?/.+\.(.+)', file1)[0] == 'csv':
                         df1, df2 = pd.read_csv(file1), pd.read_csv(file2)
@@ -76,19 +74,18 @@ while True:
                         df1, df2 = pd.read_excel(file1), pd.read_excel(file2) 
                     proceedtofindcommonkeys = 1
                 except IOError:
-                    print('Error : File not accessible')
+                    sg.popup('Error : File not accessible')
                     proceedtofindcommonkeys = 0
                 except UnicodeDecodeError:
-                    print("Error : File includes a unicode character that cannot be decoded with the default UTF decryption")
+                    sg.popup('Error : File includes a unicode character that cannot be decoded with the default UTF decryption')
                     proceedtofindcommonkeys = 0
                 except Exception as e:
-                    print('Error : ', e)
+                    sg.popup('Please select two compatible files with atleast two similar headers')
                     proceedtofindcommonkeys = 0
         else:
-            print('Error : Please choose 2 files')
+            sg.popup('Please select two compatible files with atleast two similar headers')
         if proceedtofindcommonkeys == 1 :
-            window1.Hide()
-            window1.disable()
+            window1.hide()
             secondwindow = 1
             break
 #########################################################################This section completed#################################################################
@@ -105,14 +102,10 @@ elif re.findall('/.+?/.+\.(.+)', file1)[0] == 'json':
 elif re.findall('/.+?/.+\.(.+)', file1)[0] in ['xlsx', 'xlsm']:
     df1, df2 = pd.read_excel(file1), pd.read_excel(file2)
 
-#Finding matched rows
-df = df1.merge(df2, how = 'inner' ,indicator=False)
-       
-# Finding unique rows in file 1
-unique_df1 = df1.merge(df2, how = 'outer' ,indicator=True).loc[lambda x : x['_merge']=='left_only']
+#Convert Columns to string
+df1 = df1.astype(str)
+df2 = df2.astype(str)
 
-# Finding unique rows in file 2
-unique_df2 = df1.merge(df2, how = 'outer' ,indicator=True).loc[lambda x : x['_merge']=='right_only']
 
 ##################################################
 
@@ -135,8 +128,6 @@ def listToString(s):
     
     # return string  
     return (str1.join(s))
-
-
 
 #Create location for output
 m = re.search('/Users/(.+?)/', file1)
@@ -163,8 +154,7 @@ layoutpostfile = [
     [sg.Button('Add Comparison'), sg.Button('Clear Comparison')],
     [sg.InputText('File 1 :' + listToString(file1_val_selected), readonly= True ,key = 'text1', size = (100,150))],
     [sg.InputText('File 2 :' + listToString(file2_val_selected), readonly= True ,key = 'text2', size = (100,150))],
-    [sg.Button("Compare all selected headers")], 
-    [sg.Button('Compare column to column'),  sg.Cancel('Exit')] 
+    [sg.Button("Compare"), sg.Button('Select different files')] 
 ]
 
       
@@ -193,7 +183,7 @@ while True:  # The Event Loop
         window2['text2'].update('File 2:' +listToString(file2_val_selected))
 
 
-    elif event == 'Compare all selected headers':
+    elif event == 'Compare':
         for i in range(len(keys1)):
             if(values[keys1[i]]== TRUE):
                 file1_val_selected.append(window2.Element(keys1[i]).Key.removesuffix('_file1'))
@@ -215,21 +205,27 @@ while True:  # The Event Loop
         unique_sf1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
         unique_sf2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
         xlwriter.close()
-        if sg.PopupOKCancel('Request Completed, Continue to open file?') == 'OK':
+        if sg.PopupYesNo('Request Completed, Continue to open file?') == "YES":
             os.system('start "excel" "C:\"' + path +'/compare_selected.xlsx')
         file1_val_selected.clear()
         file2_val_selected.clear()
         window2['text1'].update('File 1:' +listToString(file1_val_selected))
         window2['text2'].update('File 2:' +listToString(file2_val_selected))
 
-    elif event == 'Compare column to column':
-        xlwriter = pd.ExcelWriter(path + '/column_to_column.xlsx')
-        df.to_excel(xlwriter, sheet_name= 'all matched rows', index = False , header=True)
-        unique_df1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
-        unique_df2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
-        xlwriter.close()
-        if sg.PopupOKCancel('Request Completed, Continue to open file?') == 'OK':
-            os.system('start "excel" "C:\"'+ path + '/column_to_column.xlsx')
+    elif event == 'Select different files':
+        window2.hide()
+        window1.un_hide()
+        window1.refresh()
+        
+
+    # elif event == 'Compare column to column':
+    #     xlwriter = pd.ExcelWriter(path + '/column_to_column.xlsx')
+    #     df.to_excel(xlwriter, sheet_name= 'all matched rows', index = False , header=True)
+    #     unique_df1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
+    #     unique_df2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
+    #     xlwriter.close()
+        # if sg.('Request Completed, Continue to open file?') == 'OK':
+        #     os.system('start "excel" "C:\"'+ path + '/column_to_column.xlsx')
 
 
     
