@@ -13,6 +13,7 @@ import pandas as pd
 import os
 supportedextensions = {'csv','xlsx','xlsm','json'}
 
+#Function to create main window
 def make_first_window():
 
     #build Window 1
@@ -37,7 +38,7 @@ def listToString(s):
     # return string  
     return (str1.join(s))
 
-
+#main function
 def main():
 
     window1 = make_first_window()  #create the first window
@@ -185,6 +186,9 @@ def main():
                         if not file1_val_selected or not file2_val_selected:
                             sg.popup('Please select atleast one column from each file')
                             continue
+                        if len(file1_val_selected) is not len(file2_val_selected):
+                            sg.popup('Please clear and select headers from both files')
+                            continue
                         # Finding the matched rows 
                         sf = df1.merge(df2, how ='inner', left_on= file1_val_selected, right_on= file2_val_selected, indicator=False)
                         # Finding unique rows in file 1
@@ -197,7 +201,8 @@ def main():
                         unique_sf1.to_excel(xlwriter, sheet_name = 'unique_rows_file1', index = False, header = True)
                         unique_sf2.to_excel(xlwriter, sheet_name = 'unique_rows_file2', index = False, header = True)
                         xlwriter.close()
-                        if sg.PopupYesNo('Request Completed, Continue to open file?') == "YES":
+                        button_pressed = sg.PopupYesNo('Request Completed, Continue to open file?')
+                        if button_pressed == 'Yes':
                             os.system('start "excel" "C:\"' + path +'/compare_selected.xlsx')
                         file1_val_selected.clear()
                         file2_val_selected.clear()
