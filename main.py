@@ -41,7 +41,8 @@ def listToString(s):
 #main function
 def main():
 
-    window1 = make_first_window()  #create the first window
+    #create the first window
+    window1 = make_first_window()  
     while True:
         event, values = window1.read()
         if event in (None, 'Exit', 'Cancel'):
@@ -57,7 +58,7 @@ def main():
                 file1temp = re.findall('.+:\/.+.', file1)
                 file2temp = re.findall('.+:\/.+.', file1)
                 pass_stage = 1
-
+                #Error Checking for first window
                 #check if the paths for both files is valid 
                 if not file1temp and file1temp is not None:
                     sg.popup('Error :File 1 path is not valid')
@@ -135,6 +136,8 @@ def main():
                         print("The new directory is created")
                 else :
                     print("directory already exists")
+
+                #layout for second window
                 layoutpostfile = [
                     [sg.Text('Location of file one'), sg.InputText(file1,disabled = True, size = (75,2))],
                     [sg.Text('Location of file two'), sg.InputText(file2,disabled = True, size = (75,2))],
@@ -149,6 +152,8 @@ def main():
                     [sg.InputText('File 2 :' + listToString(file2_val_selected), readonly= True ,key = 'text2', size = (100,150))],
                     [sg.Button("Compare"), sg.Button('Select different files')] 
                 ]
+                
+                #second window created
                 window2 = make_second_window(layoutpostfile)
                 while True:  # The Event Loop
                     event, values = window2.read()
