@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['C:\\Users\\AkeemMckenzie\\source\\repos\\csvComparisonTool'],
+             pathex=['C:\\Users\\Akeem.McKenzie\\Desktop\\csvComparisonTool'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -33,7 +33,7 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False,
+          console=True,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
